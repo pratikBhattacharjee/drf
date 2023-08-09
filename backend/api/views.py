@@ -1,19 +1,19 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
+from products.models import Product
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+from products.serializers import ProductSerializer
 
 
+@api_view(['GET'])
 def api_home(request, *args, **kwargs):
-    body = request.body
+    """Django REST Framework API Home"""
     data = {}
-    try:
-        data = json.loads(body)
-    except:
-        pass
-    print(data)
-    print(request.headers)
-
-    data['params'] = dict(request.GET)
-    data['headers'] = dict(request.headers)
-    data['content_type'] = request.content_type
-    return JsonResponse(data)
+    instance = Product.objects.all().order_by("?").first()
+    if instance is not None:
+        data = ProductSerializer(instance).data
+    return Response(data)

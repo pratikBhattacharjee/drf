@@ -9,11 +9,10 @@ from rest_framework.decorators import api_view
 from products.serializers import ProductSerializer
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def api_home(request, *args, **kwargs):
     """Django REST Framework API Home"""
-    data = {}
-    instance = Product.objects.all().order_by("?").first()
-    if instance is not None:
-        data = ProductSerializer(instance).data
-    return Response(data)
+    serialized_data = ProductSerializer(data=request.data)
+    if serialized_data.is_valid(raise_exception=True):
+        print(serialized_data.data)
+        return Response(serialized_data.data)
